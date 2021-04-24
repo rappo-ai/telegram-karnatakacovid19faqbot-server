@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  web:
+    build: ./app-server
+    depends_on:
+      - rasa
+    volumes:
+      - ./rasa-volume:/home/node/rasa
+  rasa:
+    image: rasa/rasa
+    volumes:
+      - ./rasa-volume:/app
+    #entrypoint: bash -c "rasa train -vv > /app/train_logs.txt && rasa run --enable-api -vv --log-file /app/run_logs.txt"
+    entrypoint: bash -c "rasa run --enable-api -vv --log-file /app/run_logs.txt"

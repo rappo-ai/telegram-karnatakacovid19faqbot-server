@@ -1,6 +1,6 @@
 # Rappo / Telegram NLP Bot Server
 
-This repository contains the codebase for Telegram NLP bot server.
+This repository contains the codebase for Karnataka Covid-19 FAQ bot on Telegram.
 
 ## Steps to Build & Run the app
 

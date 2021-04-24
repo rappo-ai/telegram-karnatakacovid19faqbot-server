@@ -1,0 +1,19 @@
+version: "2.0"
+config:
+  store_entities_as_slots: true
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+- faq:
+    use_entities: false
+- nlu_fallback:
+    use_entities: false
+entities: []
+slots: {}
+responses:
+  utter_faq:
+  - text: FAQ
+actions: []
+forms: {}
+e2e_actions: []

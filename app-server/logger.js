@@ -14,6 +14,10 @@ const logger = {
     console.error(chalk.red(err));
   },
 
+  warn: msg => {
+    console.warn(chalk.yellow(msg));
+  },
+
   info: msg => {
     console.info(msg);
   },

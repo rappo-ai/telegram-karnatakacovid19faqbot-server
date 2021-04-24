@@ -1,6 +1,6 @@
 const path = require('path');
 require('dotenv').config({
-  path: path.resolve(__dirname, '../.env.server'),
+  path: path.resolve(__dirname, './.env.server'),
 });
 
 const express = require('express');
@@ -9,7 +9,7 @@ const morgan = require('morgan')('combined');
 const argv = require('./argv');
 const logger = require('./logger');
 const webhooks = require('./middlewares/webhooks');
-const { callTelegramApi, getBotSecret, getWebhookUrl } = require('./utils/telegram');
+const { callTelegramApi, getWebhookUrl } = require('./utils/telegram');
 const port = require('./port');
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -59,12 +59,6 @@ app.listen(port, host, async err => {
 
   try {
     let setWebhookResponse;
-
-    logger.info(`Calling setWebhook for worker bot with username ${process.env.TELEGRAM_WORKER_BOT_USERNAME}`);
-    setWebhookResponse = await callTelegramApi("setWebhook", process.env.TELEGRAM_WORKER_BOT_TOKEN, {
-      url: getWebhookUrl(hostUrl, process.env.TELEGRAM_WORKER_BOT_USERNAME, process.env.TELEGRAM_WORKER_BOT_SECRET),
-    });
-    logger.info(setWebhookResponse.data);
 
     logger.info(`Calling setWebhook for admin bot with username ${process.env.TELEGRAM_ADMIN_BOT_USERNAME}`);
     setWebhookResponse = await callTelegramApi("setWebhook", process.env.TELEGRAM_ADMIN_BOT_TOKEN, {

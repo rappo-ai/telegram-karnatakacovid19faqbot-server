@@ -1,0 +1,5 @@
+# rasa-volume running files
+*logs.txt
+models
+data/nlu.yml
+data/responses.yml

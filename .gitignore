@@ -1,11 +1,2 @@
-# rasa-volume running files
-rasa-volume/*logs.txt
-rasa-volume/models
-rasa-volume/data/nlu.yml
-rasa-volume/data/responses.yml
-
-# env files
-.env.server
-
 # OSX files
 .DS_Store

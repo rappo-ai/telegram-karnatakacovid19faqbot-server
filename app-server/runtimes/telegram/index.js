@@ -97,7 +97,7 @@ async function onAdminGroupChatMessage(update) {
     const intent = getIntent(update.message.text);
     if (update.message.reply_to_message) {
       const sample_id = sample_message_map[update.message.reply_to_message.message_id];
-      if (sample_id) {
+      if (sample_id !== undefined) {
         // labeling
         labels[sample_id] = intent;
         await sendMessage({

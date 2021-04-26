@@ -103,14 +103,14 @@ async function onAdminGroupChatMessage(update) {
         await sendMessage({
           chat_id: update.message.chat.id, text: `Label changed to ${intent}`,
           reply_to_message_id: update.message.reply_to_message.message_id,
-        }, process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+        }, process.env.TELEGRAM_BOT_TOKEN);
       } else {
         // response
         responses[intent] = update.message.reply_to_message.message_id;
         await sendMessage({
           chat_id: update.message.chat.id, text: `Response added for ${intent}`,
           reply_to_message_id: update.message.reply_to_message.message_id,
-        }, process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+        }, process.env.TELEGRAM_BOT_TOKEN);
       }
     }
   } else if (update.message.text === "/train") {
@@ -141,7 +141,7 @@ async function onSupportGroupChatMessage(update) {
 
   if (predicted_intent && confidence >= CONFIDENCE_THRESHOLD && responses[predicted_intent]) {
     await copyMessage({ from_chat_id: admin_group_chat_id, chat_id: update.message.chat.id, message_id: responses[predicted_intent], reply_to_message_id: update.message.message_id },
-      process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+      process.env.TELEGRAM_BOT_TOKEN);
   }
 
   const sample_id = addSample(update.message.text);
@@ -154,7 +154,7 @@ Confidence: ${confidence}
 Action: ${action_taken}`;
 
   //apiResponse = await forwardMessage({ from_chat_id: update.message.chat.id, chat_id: admin_group_chat_id, message_id: update.message.message_id },
-  //  process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+  //  process.env.TELEGRAM_BOT_TOKEN);
 
   //linkSampleToMessage(apiResponse.data.result.message_id, sample_id);
 
@@ -166,7 +166,7 @@ Action: ${action_taken}`;
         [{ text: "👍", callback_data: JSON.stringify({ action: "correct" }) }, { text: "👎", callback_data: JSON.stringify({ action: "wrong" }) }],
       ]
     }*/
-  }, process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+  }, process.env.TELEGRAM_BOT_TOKEN);
 
   linkSampleToMessage(apiResponse.data.result.message_id, sample_id);
 }
@@ -181,23 +181,23 @@ function isSupportGroupChat(update) {
     (update.message.chat.title && update.message.chat.title === process.env.TELEGRAM_SUPPORT_GROUP_TITLE);
 }
 
-addBot(process.env.TELEGRAM_ADMIN_BOT_USERNAME, process.env.TELEGRAM_ADMIN_BOT_SECRET, {
+addBot(process.env.TELEGRAM_BOT_USERNAME, process.env.TELEGRAM_BOT_SECRET, {
   onPMChatJoin: async function (update) {
     await sendMessage({
       chat_id: update.message.chat.id,
       text: 'This bot is meant to be used only in a specific group. Messages sent here will be ignored.'
     },
-      process.env.TELEGRAM_ADMIN_BOT_TOKEN);
-    await leaveChat({ chat_id: update.message.chat.id }, process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+      process.env.TELEGRAM_BOT_TOKEN);
+    await leaveChat({ chat_id: update.message.chat.id }, process.env.TELEGRAM_BOT_TOKEN);
   },
   onPMChatMessage: async function (update) {
-    logger.warn(`@${process.env.TELEGRAM_ADMIN_BOT_USERNAME} used in PM chat with ${update.message.chat.username} | ${update.message.chat.id}`)
+    logger.warn(`@${process.env.TELEGRAM_BOT_USERNAME} used in PM chat with ${update.message.chat.username} | ${update.message.chat.id}`)
   },
   onPMChatBlocked: async function (update) {
-    logger.info(`@${process.env.TELEGRAM_ADMIN_BOT_USERNAME} blocked by ${update.my_chat_member.from.first_name} | ${update.my_chat_member.from.username} | ${update.my_chat_member.from.id}`);
+    logger.info(`@${process.env.TELEGRAM_BOT_USERNAME} blocked by ${update.my_chat_member.from.first_name} | ${update.my_chat_member.from.username} | ${update.my_chat_member.from.id}`);
   },
   onGroupChatJoin: async function (update) {
-    logger.info(`@${process.env.TELEGRAM_ADMIN_BOT_USERNAME} added to group ${update.message.chat.title} | ${update.message.chat.id} by ${update.message.from.first_name} | ${update.message.from.username} | ${update.message.from.id}`);
+    logger.info(`@${process.env.TELEGRAM_BOT_USERNAME} added to group ${update.message.chat.title} | ${update.message.chat.id} by ${update.message.from.first_name} | ${update.message.from.username} | ${update.message.from.id}`);
     if (isAdminGroupChat(update)) {
       admin_group_chat_id = update.message.chat.id;
     }
@@ -210,18 +210,18 @@ addBot(process.env.TELEGRAM_ADMIN_BOT_USERNAME, process.env.TELEGRAM_ADMIN_BOT_S
     }
   },
   onGroupChatLeave: async function (update) {
-    logger.info(`@${process.env.TELEGRAM_ADMIN_BOT_USERNAME} kicked in group ${update.my_chat_member.chat.title} | ${update.my_chat_member.chat.id} by ${update.my_chat_member.from.first_name} | ${update.my_chat_member.from.username} | ${update.my_chat_member.from.id}`);
+    logger.info(`@${process.env.TELEGRAM_BOT_USERNAME} kicked in group ${update.my_chat_member.chat.title} | ${update.my_chat_member.chat.id} by ${update.my_chat_member.from.first_name} | ${update.my_chat_member.from.username} | ${update.my_chat_member.from.id}`);
   },
   onChannelJoin: async function (update) {
     await sendMessage({ chat_id: update.my_chat_member.chat.id, text: 'This bot is not designed to be used in a channel and will leave the channel shortly.' },
-      process.env.TELEGRAM_ADMIN_BOT_TOKEN);
-    await leaveChat({ chat_id: update.my_chat_member.chat.id }, process.env.TELEGRAM_ADMIN_BOT_TOKEN);
+      process.env.TELEGRAM_BOT_TOKEN);
+    await leaveChat({ chat_id: update.my_chat_member.chat.id }, process.env.TELEGRAM_BOT_TOKEN);
   },
   onChannelMessage: async function (update) {
-    logger.warn(`@${process.env.TELEGRAM_ADMIN_BOT_USERNAME} used in channel ${update.my_chat_member.chat.title} | ${update.my_chat_member.chat.id}`)
+    logger.warn(`@${process.env.TELEGRAM_BOT_USERNAME} used in channel ${update.my_chat_member.chat.title} | ${update.my_chat_member.chat.id}`)
   },
   onChannelLeave: async function (update) {
-    logger.info(`@${process.env.TELEGRAM_ADMIN_BOT_USERNAME} kicked in channel ${update.my_chat_member.chat.title} | ${update.my_chat_member.chat.id} by ${update.my_chat_member.from.first_name} | ${update.my_chat_member.from.username} | ${update.my_chat_member.from.id}`);
+    logger.info(`@${process.env.TELEGRAM_BOT_USERNAME} kicked in channel ${update.my_chat_member.chat.title} | ${update.my_chat_member.chat.id} by ${update.my_chat_member.from.first_name} | ${update.my_chat_member.from.username} | ${update.my_chat_member.from.id}`);
   },
 });
 

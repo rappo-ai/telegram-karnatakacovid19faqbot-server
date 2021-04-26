@@ -60,9 +60,9 @@ app.listen(port, host, async err => {
   try {
     let setWebhookResponse;
 
-    logger.info(`Calling setWebhook for admin bot with username ${process.env.TELEGRAM_ADMIN_BOT_USERNAME}`);
-    setWebhookResponse = await callTelegramApi("setWebhook", process.env.TELEGRAM_ADMIN_BOT_TOKEN, {
-      url: getWebhookUrl(hostUrl, process.env.TELEGRAM_ADMIN_BOT_USERNAME, process.env.TELEGRAM_ADMIN_BOT_SECRET),
+    logger.info(`Calling setWebhook for admin bot with username ${process.env.TELEGRAM_BOT_USERNAME}`);
+    setWebhookResponse = await callTelegramApi("setWebhook", process.env.TELEGRAM_BOT_TOKEN, {
+      url: getWebhookUrl(hostUrl, process.env.TELEGRAM_BOT_USERNAME, process.env.TELEGRAM_BOT_SECRET),
     });
     logger.info(setWebhookResponse.data);
   } catch (e) {

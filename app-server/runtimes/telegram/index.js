@@ -72,12 +72,10 @@ async function processUpdate(task, callback) {
   }
 }
 
-let admin_group_chat_id = -533125184;
-
 const samples = [];
 const sample_message_map = {};
 const responses = {};
-let labels = {};
+const labels = {};
 function addSample(text) {
   samples.push(text);
   return samples.length - 1;
@@ -140,7 +138,7 @@ async function onSupportGroupChatMessage(update) {
   const action_taken = predicted_intent ? confidence >= CONFIDENCE_THRESHOLD ? responses[predicted_intent] ? "Answered" : "Skipped - No response defined" : "Skipped - Low confidence" : "Skipped - No prediction";
 
   if (predicted_intent && confidence >= CONFIDENCE_THRESHOLD && responses[predicted_intent]) {
-    await copyMessage({ from_chat_id: admin_group_chat_id, chat_id: update.message.chat.id, message_id: responses[predicted_intent], reply_to_message_id: update.message.message_id },
+    await copyMessage({ from_chat_id: process.env.TELEGRAM_ADMIN_GROUP_CHAT_ID, chat_id: update.message.chat.id, message_id: responses[predicted_intent], reply_to_message_id: update.message.message_id },
       process.env.TELEGRAM_BOT_TOKEN);
   }
 
@@ -153,13 +151,13 @@ Prediction: ${predicted_intent}
 Confidence: ${confidence}
 Action: ${action_taken}`;
 
-  //apiResponse = await forwardMessage({ from_chat_id: update.message.chat.id, chat_id: admin_group_chat_id, message_id: update.message.message_id },
+  //apiResponse = await forwardMessage({ from_chat_id: update.message.chat.id, chat_id: process.env.TELEGRAM_ADMIN_GROUP_CHAT_ID, message_id: update.message.message_id },
   //  process.env.TELEGRAM_BOT_TOKEN);
 
   //linkSampleToMessage(apiResponse.data.result.message_id, sample_id);
 
   apiResponse = await sendMessage({
-    chat_id: admin_group_chat_id, text: admin_message,
+    chat_id: process.env.TELEGRAM_ADMIN_GROUP_CHAT_ID, text: admin_message,
     //reply_to_message_id: apiResponse.data.result.message_id,
     /*reply_markup: {
       inline_keyboard: [
@@ -173,12 +171,12 @@ Action: ${action_taken}`;
 
 function isAdminGroupChat(update) {
   return (update.message.chat.username && update.message.chat.username === process.env.TELEGRAM_ADMIN_GROUP_USERNAME) ||
-    (update.message.chat.title && update.message.chat.title === process.env.TELEGRAM_ADMIN_GROUP_TITLE);
+    (update.message.chat.id === parseInt(process.env.TELEGRAM_ADMIN_GROUP_CHAT_ID));
 }
 
 function isSupportGroupChat(update) {
   return (update.message.chat.username && update.message.chat.username === process.env.TELEGRAM_SUPPORT_GROUP_USERNAME) ||
-    (update.message.chat.title && update.message.chat.title === process.env.TELEGRAM_SUPPORT_GROUP_TITLE);
+    (update.message.chat.id === parseInt(process.env.TELEGRAM_SUPPORT_GROUP_CHAT_ID));
 }
 
 addBot(process.env.TELEGRAM_BOT_USERNAME, process.env.TELEGRAM_BOT_SECRET, {
@@ -188,7 +186,6 @@ addBot(process.env.TELEGRAM_BOT_USERNAME, process.env.TELEGRAM_BOT_SECRET, {
       text: 'This bot is meant to be used only in a specific group. Messages sent here will be ignored.'
     },
       process.env.TELEGRAM_BOT_TOKEN);
-    await leaveChat({ chat_id: update.message.chat.id }, process.env.TELEGRAM_BOT_TOKEN);
   },
   onPMChatMessage: async function (update) {
     logger.warn(`@${process.env.TELEGRAM_BOT_USERNAME} used in PM chat with ${update.message.chat.username} | ${update.message.chat.id}`)
@@ -198,9 +195,6 @@ addBot(process.env.TELEGRAM_BOT_USERNAME, process.env.TELEGRAM_BOT_SECRET, {
   },
   onGroupChatJoin: async function (update) {
     logger.info(`@${process.env.TELEGRAM_BOT_USERNAME} added to group ${update.message.chat.title} | ${update.message.chat.id} by ${update.message.from.first_name} | ${update.message.from.username} | ${update.message.from.id}`);
-    if (isAdminGroupChat(update)) {
-      admin_group_chat_id = update.message.chat.id;
-    }
   },
   onGroupChatMessage: async function (update) {
     if (isAdminGroupChat(update)) {
